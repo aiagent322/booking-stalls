@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Overnight Stabling — Equestrian Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════════
+   OVERNIGHT STABLING — STANDARDIZED EQUESTRIAN CENTER TEMPLATE
+   Config-driven: swap VENUE object to rebrand for any facility
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* These get overridden by JS from VENUE config */
+  --primary: #1F4E79;
+  --primary-dark: #163a5a;
+  --accent: #C8A84B;
+  --accent-light: #F5EFD6;
+  --surface: #FDFAF5;
+  --surface-warm: #F5EFE3;
+  --border: #E2D9CC;
+  --text: #1A1A1A;
+  --text-mid: #555;
+  --text-light: #888;
+
+  --green: #2D6A4F;
+  --green-bg: #D8F3DC;
+  --red: #C62828;
+  --red-bg: #FFEBEE;
+  --yellow: #E65100;
+  --yellow-bg: #FFF3E0;
+  --city-color: #1565C0;
+  --city-bg: #E3F2FD;
+  --oper-color: #2D6A4F;
+  --oper-bg: #D8F3DC;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+/* ── HEADER ───────────────────────────────────────────────────────── */
+header {
+  background: var(--primary);
+  border-bottom: 3px solid var(--accent);
+  position: sticky; top: 0; z-index: 200;
+}
+.hdr {
+  max-width: 1260px; margin: 0 auto; padding: 10px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.hdr-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.hdr-badge {
+  background: var(--accent); color: var(--primary);
+  font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 700;
+  padding: 5px 10px; border-radius: 4px; white-space: nowrap; letter-spacing: 0.03em;
+}
+.hdr-title { color: #fff; font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; line-height: 1.15; }
+.hdr-sub { color: rgba(255,255,255,.5); font-size: 10.5px; font-weight: 400; letter-spacing: 0.04em; }
+.hdr-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.view-btn {
+  padding: 6px 13px; border-radius: 5px; font-size: 11.5px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid; transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.view-btn.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+.view-btn:not(.active) { background: transparent; color: rgba(255,255,255,.65); border-color: rgba(255,255,255,.2); }
+.view-btn:not(.active):hover { border-color: rgba(255,255,255,.5); color: #fff; }
+
+/* ── EVENT SELECTOR ───────────────────────────────────────────────── */
+.event-bar {
+  background: var(--surface-warm); border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+}
+.event-bar-inner {
+  max-width: 1260px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.event-label { font-size: 12px; font-weight: 600; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.08em; }
+.event-select {
+  flex: 1; max-width: 420px; padding: 8px 12px; border: 1.5px solid var(--border);
+  border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13.5px;
+  background: #fff; color: var(--text); cursor: pointer;
+}
+.event-meta {
+  margin-left: auto; display: flex; gap: 16px; font-size: 12.5px; color: var(--text-mid);
+}
+.event-meta strong { color: var(--text); }
+
+/* ── LAYOUT ───────────────────────────────────────────────────────── */
+.main { max-width: 1260px; margin: 0 auto; padding: 16px 20px; }
+.layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+
+/* ── STATS BAR ────────────────────────────────────────────────────── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;
+  grid-column: 1 / -1;
+}
+.stat-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px 16px; text-align: center;
+}
+.stat-val { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--primary); line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; font-weight: 500; }
+.stat-card.accent .stat-val { color: var(--accent); }
+.stat-card.green .stat-val { color: var(--green); }
+
+/* ── BARN TABS ────────────────────────────────────────────────────── */
+.barn-tabs {
+  display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.barn-tab {
+  padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text-mid); transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.barn-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.barn-tab:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+/* ── STALL GRID ───────────────────────────────────────────────────── */
+.barn-section-label {
+  font-size: 11.5px; font-weight: 600; color: var(--text-mid); text-transform: uppercase;
+  letter-spacing: 0.06em; margin: 14px 0 6px; padding-left: 2px;
+}
+.stall-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; margin-bottom: 8px; }
+
+.stall {
+  aspect-ratio: 1; border-radius: 5px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid transparent; transition: all .12s; position: relative;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stall.available { background: var(--green-bg); color: var(--green); border-color: rgba(45,106,79,.25); }
+.stall.available:hover { border-color: var(--green); transform: scale(1.08); box-shadow: 0 3px 12px rgba(45,106,79,.25); z-index: 2; }
+.stall.booked { background: var(--red-bg); color: var(--red); border-color: rgba(198,40,40,.15); cursor: default; opacity: .7; }
+.stall.pending { background: var(--yellow-bg); color: var(--yellow); border-color: rgba(230,81,0,.2); cursor: default; }
+.stall.tack::after { content: '🧰'; font-size: 8px; margin-top: 1px; }
+
+/* ── SIDEBAR PANEL ────────────────────────────────────────────────── */
+.sidebar { position: sticky; top: 80px; }
+
+.panel {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden;
+}
+.panel-header {
+  background: var(--primary); color: #fff; padding: 16px 18px;
+  font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600;
+}
+.panel-body { padding: 18px; }
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-mid); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.field input, .field select {
+  width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px; background: #fff; color: var(--text);
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,78,121,.1); }
+
+.price-breakdown {
+  background: var(--surface-warm); border-radius: 8px; padding: 14px; margin: 14px 0;
+}
+.price-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+.price-row.total { font-weight: 700; font-size: 15px; border-top: 1.5px solid var(--border); padding-top: 8px; margin-top: 6px; }
+.price-row .split-city { color: var(--city-color); font-size: 11.5px; }
+.price-row .split-oper { color: var(--oper-color); font-size: 11.5px; }
+
+.book-btn {
+  width: 100%; padding: 13px; border: none; border-radius: 8px;
+  background: var(--accent); color: var(--primary); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.02em;
+  transition: all .15s;
+}
+.book-btn:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.15); }
+.book-btn:disabled { opacity: .4; cursor: default; transform: none; box-shadow: none; filter: none; }
+
+/* ── EMPTY STATE ──────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--text-light);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state h3 { color: var(--text-mid); font-size: 15px; margin-bottom: 6px; }
+.empty-state p { font-size: 13px; }
+
+/* ── CONFIRMATION OVERLAY ─────────────────────────────────────────── */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  z-index: 500; align-items: center; justify-content: center; padding: 20px;
+}
+.confirm-overlay.show { display: flex; }
+.confirm-card {
+  background: #fff; border-radius: 14px; max-width: 440px; width: 100%;
+  padding: 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.confirm-check { font-size: 52px; margin-bottom: 12px; }
+.confirm-id { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.confirm-detail { font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin-bottom: 16px; }
+.confirm-split {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0;
+}
+.split-box {
+  border-radius: 8px; padding: 12px; text-align: center;
+}
+.split-box.city { background: var(--city-bg); color: var(--city-color); }
+.split-box.oper { background: var(--oper-bg); color: var(--oper-color); }
+.split-box .split-pct { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+.split-box .split-amt { font-size: 20px; font-weight: 700; margin-top: 2px; }
+.close-btn {
+  padding: 11px 28px; border: none; border-radius: 8px;
+  background: var(--primary); color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px;
+}
+
+/* ── ADMIN VIEW ───────────────────────────────────────────────────── */
+.admin-view { display: none; }
+.admin-view.show { display: block; }
+.visitor-view.hide { display: none; }
+.admin-kpis {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
+}
+.kpi {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px; text-align: center;
+}
+.kpi-val { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--primary); }
+.kpi-lbl { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+.kpi.city .kpi-val { color: var(--city-color); }
+.kpi.oper .kpi-val { color: var(--oper-color); }
+
+.manifest-table {
+  width: 100%; border-collapse: collapse; font-size: 12.5px; background: #fff;
+  border-radius: 8px; overflow: hidden; border: 1px solid var(--border);
+}
+.manifest-table th {
+  background: var(--primary); color: #fff; padding: 10px 12px;
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.manifest-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.manifest-table tr:last-child td { border-bottom: none; }
+.manifest-table tr:hover td { background: var(--surface-warm); }
+.status-badge { font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 10px; }
+.sb-confirmed { background: var(--green-bg); color: var(--green); }
+
+/* ── TOAST ─────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--primary); color: #fff; padding: 12px 24px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 600; opacity: 0; transition: all .3s; z-index: 600;
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── OCCUPANCY BAR ────────────────────────────────────────────────── */
+.occ-bar-wrap { margin-top: 6px; }
+.occ-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.occ-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width .4s; }
+
+/* ── FAQ VIEW ──────────────────────────────────────────────────────── */
+.faq-view { display: none; }
+.faq-view.show { display: block; }
+.faq-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.faq-search {
+  flex: 1; min-width: 220px; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+  background: #fff; color: var(--text);
+}
+.faq-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,78,121,.1); }
+.faq-cats {
+  display: flex; gap: 5px; flex-wrap: wrap;
+}
+.faq-cat-btn {
+  padding: 5px 12px; border-radius: 14px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--border); background: #fff;
+  color: var(--text-mid); transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.faq-cat-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.faq-cat-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+.faq-count { font-size: 12px; color: var(--text-light); margin-bottom: 12px; }
+.faq-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+.faq-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px 18px; cursor: pointer; transition: all .15s;
+}
+.faq-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+.faq-card.open { border-color: var(--primary); border-left: 3px solid var(--accent); }
+.faq-q {
+  font-size: 13.5px; font-weight: 600; color: var(--text); display: flex;
+  justify-content: space-between; align-items: flex-start; gap: 8px;
+}
+.faq-q .arrow { color: var(--text-light); font-size: 12px; transition: transform .2s; flex-shrink: 0; margin-top: 2px; }
+.faq-card.open .faq-q .arrow { transform: rotate(180deg); }
+.faq-a {
+  display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+  font-size: 13px; color: var(--text-mid); line-height: 1.65;
+}
+.faq-card.open .faq-a { display: block; }
+.faq-tag {
+  display: inline-block; font-size: 10px; font-weight: 600; color: var(--primary);
+  background: var(--accent-light); padding: 2px 8px; border-radius: 10px;
+  margin-top: 8px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.faq-policies { margin-top: 24px; }
+.faq-policies h3 {
+  font-family: 'Playfair Display', serif; font-size: 18px; color: var(--primary);
+  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+}
+.policy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.policy-card {
+  background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--primary);
+  border-radius: 6px; padding: 12px 14px;
+}
+.policy-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.policy-text { font-size: 12.5px; color: var(--text-mid); line-height: 1.6; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .admin-kpis { grid-template-columns: repeat(2, 1fr); }
+  .event-meta { display: none; }
+}
+@media (max-width: 480px) {
+  .stall-grid { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 4px; }
+  .hdr { flex-wrap: wrap; }
+  .hdr-right { width: 100%; justify-content: flex-end; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <a class="hdr-brand" href="#">
+      <div class="hdr-badge" id="hdrBadge">STABLING</div>
+      <div>
+        <div class="hdr-title" id="hdrTitle">Overnight Stabling</div>
+        <div class="hdr-sub" id="hdrSub">Equestrian Center</div>
+      </div>
+    </a>
+    <div class="hdr-right">
+      <button class="view-btn active" id="btn-visitor" onclick="setView('visitor')">🐴 Horse Owner</button>
+      <button class="view-btn" id="btn-admin" onclick="setView('admin')">📊 Admin</button>
+      <button class="view-btn" id="btn-faq" onclick="setView('faq')">❓ FAQ</button>
+    </div>
+  </div>
+</header>
+
+<div class="event-bar">
+  <div class="event-bar-inner">
+    <span class="event-label">Event:</span>
+    <select class="event-select" id="eventSelect" onchange="switchEvent()"></select>
+    <div class="event-meta">
+      <span id="metaDates"></span>
+      <span>Rate: <strong id="metaRate"></strong>/night</span>
+    </div>
+  </div>
+</div>
+
+<!-- VISITOR VIEW -->
+<div class="main visitor-view" id="visitorView">
+  <div class="layout">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val" id="sBooked">0</div><div class="stat-lbl">Stalls Booked</div></div>
+      <div class="stat-card green"><div class="stat-val" id="sAvail">0</div><div class="stat-lbl">Available</div></div>
+      <div class="stat-card accent"><div class="stat-val" id="sOcc">0%</div><div class="stat-lbl">Occupancy</div>
+        <div class="occ-bar-wrap"><div class="occ-bar"><div class="occ-fill" id="occFill" style="width:0"></div></div></div>
+      </div>
+      <div class="stat-card"><div class="stat-val" id="sRev">$0</div><div class="stat-lbl">Revenue</div></div>
+    </div>
+
+    <div>
+      <div class="barn-tabs" id="barnTabs"></div>
+      <div id="stallArea"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel" id="bookingPanel">
+        <div class="panel-header" id="panelHeader">Select a Stall</div>
+        <div class="panel-body">
+          <div class="empty-state" id="emptyState">
+            <div class="icon">🐴</div>
+            <h3>Choose an available stall</h3>
+            <p>Click any green stall on the barn map to begin your reservation</p>
+          </div>
+          <div id="bookingForm" style="display:none">
+            <div class="field"><label>Stall</label><input type="text" id="fStall" readonly></div>
+            <div class="field"><label>Horse Name</label><input type="text" id="fHorse" placeholder="e.g. Blue Bandit"></div>
+            <div class="field"><label>Owner Name</label><input type="text" id="fOwner" placeholder="Full name"></div>
+            <div class="field"><label>Trainer (optional)</label><input type="text" id="fTrainer" placeholder="Trainer name"></div>
+            <div class="field"><label>Nights</label><select id="fNights" onchange="updatePrice()"></select></div>
+            <div class="price-breakdown" id="priceBreak" style="display:none">
+              <div class="price-row"><span>Stall rate</span><span id="pRate"></span></div>
+              <div class="price-row"><span>Nights</span><span id="pNights"></span></div>
+              <div class="price-row"><span>Bedding</span><span id="pBedding"></span></div>
+              <div class="price-row total"><span>Total</span><span id="pTotal"></span></div>
+              <div class="price-row"><span class="split-city" id="pCity"></span><span class="split-oper" id="pOper"></span></div>
+            </div>
+            <button class="book-btn" id="bookBtn" onclick="processBooking()" disabled>Complete Reservation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div class="main admin-view" id="adminView">
+  <div class="admin-kpis">
+    <div class="kpi"><div class="kpi-val" id="aOcc">0%</div><div class="kpi-lbl">Occupancy</div></div>
+    <div class="kpi"><div class="kpi-val" id="aRev">$0</div><div class="kpi-lbl">Total Revenue</div></div>
+    <div class="kpi city"><div class="kpi-val" id="aCity">$0</div><div class="kpi-lbl" id="aCityLbl">Facility</div></div>
+    <div class="kpi oper"><div class="kpi-val" id="aOper">$0</div><div class="kpi-lbl">Operator</div></div>
+  </div>
+  <table class="manifest-table">
+    <thead><tr><th>Stall</th><th>Horse</th><th>Owner</th><th>Trainer</th><th>Nights</th><th>Amount</th><th>Status</th></tr></thead>
+    <tbody id="manifestBody"></tbody>
+  </table>
+</div>
+
+<!-- FAQ VIEW -->
+<div class="main faq-view" id="faqView">
+  <div class="faq-header">
+    <input type="text" class="faq-search" id="faqSearch" placeholder="Search questions, policies, stall info…" oninput="filterFaq()">
+  </div>
+  <div class="faq-cats" id="faqCats"></div>
+  <div class="faq-count" id="faqCount"></div>
+  <div class="faq-grid" id="faqGrid"></div>
+  <div class="faq-policies">
+    <h3>Facility Policies</h3>
+    <div class="policy-grid" id="policyGrid"></div>
+  </div>
+</div>
+
+<!-- CONFIRMATION OVERLAY -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-card">
+    <div class="confirm-check">✅</div>
+    <div class="confirm-id" id="confId"></div>
+    <div class="confirm-detail" id="confDetail"></div>
+    <div class="confirm-split">
+      <div class="split-box city"><div class="split-pct" id="confCityLbl">Facility</div><div class="split-amt" id="confCity"></div></div>
+      <div class="split-box oper"><div class="split-pct">Operator (15%)</div><div class="split-amt" id="confOper"></div></div>
+    </div>
+    <button class="close-btn" onclick="closeConfirm()">Done — Back to Barn Map</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// VENUE CONFIGURATIONS — swap this object to rebrand entire app
+// ══════════════════════════════════════════════════════════════════════
+
+const VENUES = {
+  westworld: {
+    name: 'WestWorld of Scottsdale',
+    shortName: 'WestWorld',
+    badge: 'WESTWORLD',
+    owner: 'City of Scottsdale',
+    address: '16601 N. Pima Rd, Scottsdale, AZ 85260',
+    phone: '480-312-6802',
+    gate: 'Equestrian Entry — E. Polo Field Way',
+    prefix: 'WW',
+    escrow: 'City of Scottsdale equestrian escrow',
+    citySplit: 0.85,
+    operSplit: 0.15,
+    beddingFee: 18,
+    stallSize: "10' × 12'",
+    totalPermanent: 936,
+    colors: {
+      primary: '#1F4E79', primaryDark: '#163a5a',
+      accent: '#C8A84B', accentLight: '#F5EFD6',
+      cityColor: '#1565C0', cityBg: '#E3F2FD',
+    },
+    // Real layout: 20 barns, A–N (48 ea) + O(56) P(52) Q(48) R(40) S(36) T(32) = 936 stalls
+    // South group (Polo Field Way): A-G row 1, H-N row 2
+    // North group (Arena 3/4 area): O,P,Q top; R,S,T near Wendell Arena
+    barns: [
+      // ── SOUTH GROUP — Row 1 (nearest arenas 6/7/8) ──
+      { name: 'Barn A — South Row 1', sections: [
+        { label: 'Breezeway West', start: 1, count: 24, tack: [6, 19] },
+        { label: 'Breezeway East', start: 25, count: 24, tack: [30, 43] },
+      ]},
+      { name: 'Barn B — South Row 1', sections: [
+        { label: 'Breezeway West', start: 49, count: 24, tack: [54, 67] },
+        { label: 'Breezeway East', start: 73, count: 24, tack: [78, 91] },
+      ]},
+      { name: 'Barn C — South Row 1', sections: [
+        { label: 'Breezeway West', start: 97, count: 24, tack: [102, 115] },
+        { label: 'Breezeway East', start: 121, count: 24, tack: [126, 139] },
+      ]},
+      { name: 'Barn D — South Row 1', sections: [
+        { label: 'Breezeway West', start: 145, count: 24, tack: [150, 163] },
+        { label: 'Breezeway East', start: 169, count: 24, tack: [174, 187] },
+      ]},
+      { name: 'Barn E — South Row 1', sections: [
+        { label: 'Breezeway West', start: 193, count: 24, tack: [198, 211] },
+        { label: 'Breezeway East', start: 217, count: 24, tack: [222, 235] },
+      ]},
+      { name: 'Barn F — South Row 1', sections: [
+        { label: 'Breezeway West', start: 241, count: 24, tack: [246, 259] },
+        { label: 'Breezeway East', start: 265, count: 24, tack: [270, 283] },
+      ]},
+      { name: 'Barn G — South Row 1 (Feed Store)', sections: [
+        { label: 'Breezeway West', start: 289, count: 24, tack: [294, 307] },
+        { label: 'Breezeway East', start: 313, count: 24, tack: [318, 331] },
+      ]},
+      // ── SOUTH GROUP — Row 2 (along Polo Field Way) ──
+      { name: 'Barn H — South Row 2', sections: [
+        { label: 'Breezeway West', start: 337, count: 24, tack: [342, 355] },
+        { label: 'Breezeway East', start: 361, count: 24, tack: [366, 379] },
+      ]},
+      { name: 'Barn I — South Row 2', sections: [
+        { label: 'Breezeway West', start: 385, count: 24, tack: [390, 403] },
+        { label: 'Breezeway East', start: 409, count: 24, tack: [414, 427] },
+      ]},
+      { name: 'Barn J — South Row 2', sections: [
+        { label: 'Breezeway West', start: 433, count: 24, tack: [438, 451] },
+        { label: 'Breezeway East', start: 457, count: 24, tack: [462, 475] },
+      ]},
+      { name: 'Barn K — South Row 2', sections: [
+        { label: 'Breezeway West', start: 481, count: 24, tack: [486, 499] },
+        { label: 'Breezeway East', start: 505, count: 24, tack: [510, 523] },
+      ]},
+      { name: 'Barn L — South Row 2', sections: [
+        { label: 'Breezeway West', start: 529, count: 24, tack: [534, 547] },
+        { label: 'Breezeway East', start: 553, count: 24, tack: [558, 571] },
+      ]},
+      { name: 'Barn M — South Row 2', sections: [
+        { label: 'Breezeway West', start: 577, count: 24, tack: [582, 595] },
+        { label: 'Breezeway East', start: 601, count: 24, tack: [606, 619] },
+      ]},
+      { name: 'Barn N — South Row 2', sections: [
+        { label: 'Breezeway West', start: 625, count: 24, tack: [630, 643] },
+        { label: 'Breezeway East', start: 649, count: 24, tack: [654, 667] },
+      ]},
+      // ── NORTH GROUP — near Arena 3 & 4 ──
+      { name: 'Barn O — North (56 stalls)', sections: [
+        { label: 'Breezeway West', start: 673, count: 28, tack: [678, 695] },
+        { label: 'Breezeway East', start: 701, count: 28, tack: [706, 723] },
+      ]},
+      { name: 'Barn P — North (52 stalls)', sections: [
+        { label: 'Breezeway West', start: 729, count: 26, tack: [734, 749] },
+        { label: 'Breezeway East', start: 755, count: 26, tack: [760, 775] },
+      ]},
+      { name: 'Barn Q — North (48 stalls)', sections: [
+        { label: 'Breezeway West', start: 781, count: 24, tack: [786, 799] },
+        { label: 'Breezeway East', start: 805, count: 24, tack: [810, 823] },
+      ]},
+      { name: 'Barn R — Wendell Arena (40 stalls)', sections: [
+        { label: 'Breezeway West', start: 829, count: 20, tack: [834, 843] },
+        { label: 'Breezeway East', start: 849, count: 20, tack: [854, 863] },
+      ]},
+      { name: 'Barn S — Wendell Arena (36 stalls)', sections: [
+        { label: 'Breezeway West', start: 869, count: 18, tack: [874, 881] },
+        { label: 'Breezeway East', start: 887, count: 18, tack: [892, 899] },
+      ]},
+      { name: 'Barn T — Wendell Arena (32 stalls)', sections: [
+        { label: 'Breezeway West', start: 905, count: 16, tack: [910] },
+        { label: 'Breezeway East', start: 921, count: 16, tack: [926] },
+      ]},
+    ],
+    events: [
+      { id: 'suncircuit', name: 'Arizona Sun Circuit', barn: 'All Barns', dates: 'Mar 4 – Mar 14, 2026', nights: 10, rate: 65 },
+      { id: 'arabian',    name: 'Scottsdale Arabian Horse Show', barn: 'All Barns', dates: 'Feb 12 – Feb 22, 2026', nights: 10, rate: 75 },
+      { id: 'cactus',     name: 'Cactus Reining Classic', barn: 'South Barns A–G', dates: 'Mar 19 – Mar 26, 2026', nights: 8, rate: 65 },
+      { id: 'clinic',     name: 'Western Performance Clinic', barn: 'Barn O–Q', dates: 'Apr 3 – Apr 5, 2026', nights: 3, rate: 55 },
+      { id: 'nrcha',      name: 'NRCHA Kimes Ranch Derby', barn: 'All Barns', dates: 'May 27 – Jun 6, 2026', nights: 11, rate: 70 },
+    ],
+    prebooked: [1,3,8,14,25,28,33,49,52,57,73,78,84,97,103,110,121,126,145,150,158,169,174,193,198,205,217,222,241,246,253,265,270,289,294,301,313,318,337,342,355,361,366,385,390,397,409,414,433,438,451,457,462,481,486,493,505,510,529,534,541,553,558,577,582,589,601,606,625,630,637,649,654,673,678,690,701,706,729,734,745,755,760,781,786,805,810,829,834,849,854,869,874,887,892,905,910,921,926],
+    qa: [
+      {c:"General",q:"What is WestWorld of Scottsdale?",a:"A premier 386-acre event venue owned by the City of Scottsdale with 300,000+ sq. ft. of exhibit space, 9+ arenas, 20 barns (936 stalls), and 11,000 parking spaces."},
+      {c:"General",q:"Who owns WestWorld?",a:"WestWorld is owned and operated by the City of Scottsdale, on Bureau of Reclamation land."},
+      {c:"General",q:"Where is WestWorld located?",a:"16601 N. Pima Rd, Scottsdale, AZ 85260. Mailing: 9545 E. Polo Field Way. Just off the 101 Freeway on the eastside."},
+      {c:"General",q:"What types of events does WestWorld host?",a:"Equestrian shows, concerts, car shows (Barrett-Jackson), expos, rodeos, conventions, trade shows, festivals, motorsports, banquets, and weddings."},
+      {c:"History",q:"When was WestWorld founded?",a:"Origins trace to 1982 (Bureau of Reclamation agreement). Horseman's Park opened 1986, renamed HorseWorld 1988, became WestWorld 1990."},
+      {c:"History",q:"What is the Equidome?",a:"WestWorld's hallmark arena — 120,000 sq. ft. with 3,400 permanent seats. Original Equidome completed 1987."},
+      {c:"History",q:"What is the Tony Nelssen Equestrian Center?",a:"The TNEC opened in 2013, named after City Councilman Tony Nelssen. Includes the North Hall (117,000 sq. ft.) and South Hall (37,000 sq. ft.)."},
+      {c:"Stalls",q:"How many stalls does WestWorld have?",a:"936 permanent stalls across 20 barns (A–T). Barns A–N: 48 stalls each. Barn O: 56, P: 52, Q: 48, R: 40, S: 36, T: 32. All stalls are 10' × 12'."},
+      {c:"Stalls",q:"What is the barn layout?",a:"South Row 1: Barns A–G (near Arenas 6/7/8). South Row 2: Barns H–N (along E. Polo Field Way). North: Barns O–Q (near Arena 3/4). Wendell: Barns R–T. Each is a double 16' breezeway RCA design."},
+      {c:"Stalls",q:"How do I reserve stalls?",a:"Stall reservations are made through event producers, not directly through WestWorld. Contact the specific show or event for availability, rates, and procedures."},
+      {c:"Stalls",q:"What about bedding and shavings?",a:"Order through the WestWorld Feed & Bedding Store (480-312-6814). Importing outside shavings is prohibited. Minimum 2 bags per stall. Located between Barn G and Arena 5."},
+      {c:"Stalls",q:"What are the stable rules?",a:"One animal per stall. No sleeping in stalls. Hot shoeing prohibited. Decorations max 6 ft from barns. No cooking/flames within 50 ft of barns. Walk horses in stable area. Tack stall coverings must meet NFPA-701."},
+      {c:"Stalls",q:"Are wash racks available?",a:"Yes, four outdoor wash racks including one inside the North Hall."},
+      {c:"Stalls",q:"What are the fire code rules?",a:"Scottsdale Fire Marshall strictly enforces code. Tack stall coverings must meet NFPA-701. No cooking, heaters, flames in stalls or within 50 ft of any barn."},
+      {c:"Equestrian",q:"Are Coggins tests required?",a:"Yes. All horses must have a valid Coggins report on property. Out-of-state horses also need a current Health Certificate."},
+      {c:"Equestrian",q:"Is there veterinary care on-site?",a:"Yes, a Vet Clinic is available on-site during events."},
+      {c:"Equestrian",q:"Is there a farrier available?",a:"Yes, a Farrier Room is on-site for horseshoeing and hoof care during events."},
+      {c:"Parking",q:"Is parking free?",a:"Yes, free parking for all events. 11,000 spaces across the venue."},
+      {c:"Parking",q:"Is trailer parking available?",a:"Yes, extensive trailer parking near the stabling facilities with easy arena access."},
+      {c:"RV",q:"Does WestWorld have RV camping?",a:"Yes. 398 permanent RV spaces across 8 lots. $57.01/night (incl. tax). Max 14 nights. Water, electricity, dump station available."},
+      {c:"RV",q:"How do I reserve an RV spot?",a:"Submit an RV reservation request at scottsdaleaz.gov/westworld. Must be associated with a specific event."},
+      {c:"Policies",q:"Are pets allowed?",a:"Service and domestic animals permitted but must be leashed at all times. Only ADA service animals in all areas."},
+      {c:"Policies",q:"Is outside food allowed?",a:"No. Outside food and beverage prohibited. M Culinary is the official catering partner (480-351-2290)."},
+      {c:"Policies",q:"Are drones allowed?",a:"Prohibited unless approved by facility management with current FAA approval."},
+      {c:"Policies",q:"Are firearms allowed?",a:"Strictly prohibited within WestWorld of Scottsdale."},
+      {c:"Policies",q:"What is the speed limit?",a:"Main access road: 25 mph. All other roads: 15 mph."},
+      {c:"Policies",q:"Can I smoke at WestWorld?",a:"Prohibited inside barns, restrooms, and all buildings. Dedicated smoking areas set by each event."},
+      {c:"Services",q:"Is WiFi available?",a:"Yes. Contact the Event Manager's Office at 480-312-6827 for connection details."},
+      {c:"Services",q:"Are ATMs available?",a:"Yes, ATMs on-site at every event."},
+      {c:"Services",q:"Where is First Aid?",a:"No permanent stations, but events may set up stations. AEDs in North Hall, Equidome, and Multi-use Tent."},
+      {c:"Contact",q:"How do I contact WestWorld?",a:"Phone: 480-312-6802. Feed Store: 480-312-6814. Web: westworldaz.com. Mail: 16601 N. Pima Rd, Scottsdale, AZ 85260."},
+    ],
+    policies: [
+      {t:"Coggins / Health Certificates",p:"All horses must have valid Coggins report. Out-of-state horses need current Health Certificate."},
+      {t:"Feed & Bedding",p:"Order through WestWorld only (480-312-6814). Import of shavings prohibited. Minimum 2 bags per stall. Located between Barn G & Arena 5."},
+      {t:"Stable Rules",p:"One animal per stall. No sleeping in stalls. Hot shoeing prohibited. Decorations max 6 ft. No flames within 50 ft of barns. Walk horses in stable area."},
+      {t:"Fire Code (NFPA-701)",p:"Scottsdale Fire Marshall strictly enforces code. All tack stall coverings must meet NFPA-701. No cooking, heaters, or flames in or near stalls."},
+      {t:"Parking",p:"Free for all events. 11,000 spaces. Overnight parking prohibited except RV/designated areas."},
+      {t:"Firearms & Weapons",p:"Strictly prohibited within WestWorld of Scottsdale."},
+      {t:"Food & Beverage",p:"No outside food or beverage. M Culinary is official catering partner."},
+      {t:"Alcohol",p:"Available on-site through M Culinary. 21+ with ID. Cannot be removed from property."},
+      {t:"Smoking",p:"Prohibited in barns, restrooms, and all buildings. Event-specific smoking areas."},
+      {t:"Drones",p:"Prohibited unless approved by management with FAA approval."},
+      {t:"Fireworks",p:"Prohibited unless approved in writing by City of Scottsdale."},
+      {t:"Speed Limit",p:"Main road: 25 mph. All other roads: 15 mph."},
+      {t:"Pets & Animals",p:"Service/domestic animals must be leashed. Only ADA service animals permitted in all areas."},
+      {t:"RV Camping",p:"398 spaces, 8 lots. $57.01/night incl. tax. Max 14 nights. Water, electric, dump station."},
+      {t:"Code of Conduct",p:"Safe, welcoming atmosphere required. Eviction for intoxication, harassment, noise, or non-compliance."},
+    ],
+  },
+
+  horseshoe: {
+    name: 'Horseshoe Park & Equestrian Centre',
+    shortName: 'Horseshoe Park',
+    badge: 'HORSESHOE PARK',
+    owner: 'Town of Queen Creek',
+    address: '20464 E. Riggs Rd, Queen Creek, AZ 85142',
+    phone: '480-358-3793',
+    gate: 'Main Gate — Riggs Rd Entrance',
+    prefix: 'HP',
+    escrow: 'Queen Creek municipal escrow',
+    citySplit: 0.85,
+    operSplit: 0.15,
+    beddingFee: 15,
+    colors: {
+      primary: '#4A1942', primaryDark: '#361230',
+      accent: '#D4821A', accentLight: '#FAEBD7',
+      cityColor: '#6A1B9A', cityBg: '#F3E5F5',
+    },
+    barns: [
+      // Barn A — large covered barn (Chapman Arena side), ~80 stalls
+      { name: 'Barn A — Covered (Chapman Arena)', sections: [
+        { label: 'West Wing', start: 101, count: 20, tack: [106, 115] },
+        { label: 'Center Aisle', start: 121, count: 20, tack: [128, 137] },
+        { label: 'East Wing', start: 141, count: 20, tack: [148] },
+        { label: 'South Wing', start: 161, count: 20, tack: [168] },
+      ]},
+      // Barns B–G — 6 parallel barns, ~40 stalls each = 240
+      { name: 'Barn B', sections: [
+        { label: 'North Side', start: 201, count: 20, tack: [206] },
+        { label: 'South Side', start: 221, count: 20, tack: [230] },
+      ]},
+      { name: 'Barn C', sections: [
+        { label: 'North Side', start: 301, count: 20, tack: [308] },
+        { label: 'South Side', start: 321, count: 20, tack: [332] },
+      ]},
+      { name: 'Barn D', sections: [
+        { label: 'North Side', start: 401, count: 20, tack: [410] },
+        { label: 'South Side', start: 421, count: 20, tack: [428] },
+      ]},
+      { name: 'Barn E', sections: [
+        { label: 'North Side', start: 501, count: 20, tack: [508] },
+        { label: 'South Side', start: 521, count: 20, tack: [530] },
+      ]},
+      { name: 'Barn F', sections: [
+        { label: 'North Side', start: 601, count: 20, tack: [608] },
+        { label: 'South Side', start: 621, count: 20, tack: [632] },
+      ]},
+      { name: 'Barn G', sections: [
+        { label: 'North Side', start: 701, count: 20, tack: [710] },
+        { label: 'South Side', start: 721, count: 20, tack: [728] },
+      ]},
+      // Temporary / Overflow (FOHP 30-stall donation + expansion)
+      { name: 'Temp Barns — Overflow (FOHP)', sections: [
+        { label: 'Temp Barn 1', start: 801, count: 10, tack: [] },
+        { label: 'Temp Barn 2', start: 811, count: 10, tack: [] },
+        { label: 'Temp Barn 3', start: 821, count: 10, tack: [] },
+      ]},
+    ],
+    events: [
+      { id: 'azcha',   name: 'AzCHA Monthly Cutting Show', barn: 'Chapman Arena', dates: 'Apr 3 – Apr 6, 2026', nights: 4, rate: 50 },
+      { id: 'roping',  name: 'Queen Creek Team Roping Classic', barn: 'Arena 1 Roping', dates: 'Mar 14 – Mar 15, 2026', nights: 2, rate: 50 },
+      { id: 'barrel',  name: 'SE Valley Barrel Racing Futurity', barn: 'Main Arena', dates: 'May 2 – May 4, 2026', nights: 3, rate: 50 },
+      { id: 'clinic',  name: 'Craig Cameron Horsemanship Clinic', barn: 'Covered Arena', dates: 'Apr 18 – Apr 20, 2026', nights: 3, rate: 45 },
+      { id: 'rodeo',   name: "Roots N' Boots Queen Creek Rodeo", barn: 'Chapman Arena', dates: 'Mar 17 – Mar 22, 2026', nights: 5, rate: 55 },
+    ],
+    prebooked: [102,104,108,112,121,125,131,141,145,152,161,165,201,205,210,215,221,226,301,305,312,321,328,401,406,414,421,430,501,508,518,521,601,608,621,701,710,721,801,812,823],
+    qa: [
+      {c:"General",q:"What is Horseshoe Park?",a:"A 113-acre premier equestrian facility owned and operated by the Town of Queen Creek, featuring 5 arenas, 7 barns (A–G), wash rack, RV camping, and a community arena."},
+      {c:"General",q:"Who owns Horseshoe Park?",a:"Horseshoe Park & Equestrian Centre is owned and operated by the Town of Queen Creek, Arizona."},
+      {c:"General",q:"Where is Horseshoe Park?",a:"20464 E. Riggs Road, Queen Creek, AZ 85142. Between Hawes and Ellsworth roads."},
+      {c:"General",q:"When is Horseshoe Park open?",a:"Year-round. Office hours Mon–Fri 8am–5pm. Facility open weekends 7am–10pm during events. Booked 220+ days per year."},
+      {c:"Arenas",q:"How many arenas does Horseshoe Park have?",a:"Five main arenas plus a Community Arena. Arena 1 (Chapman, covered 150'×300'), Arena 2 (Tuff Shed, outdoor), Arena 3 (AZ Cutting Horse, covered 130'×300'), Arena 4 (outdoor), Arena 5 (flexible), Community Arena (225'×150')."},
+      {c:"Arenas",q:"Which arenas are covered?",a:"Arena 1 (Chapman Automotive Group Arena) and Arena 3 (Arizona Cutting Horse Arena) are covered. Others are outdoor."},
+      {c:"Arenas",q:"What is Arena 1 seating capacity?",a:"Arena 1 (Chapman) has permanent seating for approximately 3,000 spectators."},
+      {c:"Stalls",q:"How many stalls does Horseshoe Park have?",a:"320 permanent stalls in Barns A–G, plus 30 temporary stalls donated by Friends of Horseshoe Park (3 portable 10-stall barns). Room for 200 additional temporary stalls. Total current: ~350."},
+      {c:"Stalls",q:"What is the barn layout?",a:"Barn A is the large covered barn near Chapman Arena (~80 stalls, 4 wings). Barns B–G are 6 parallel barns (~40 stalls each). Three 10-stall temp barns in the overflow area. Wash rack located near Barn G."},
+      {c:"Stalls",q:"How do I reserve stalls?",a:"Contact Horseshoe Park at 480-358-3793 for facility rentals or coordinate through your event producer."},
+      {c:"Stalls",q:"What is the economic impact per stall?",a:"AQHA and American Horse Council analysis: each stall generates $26,000+ in direct annual revenue with $594,608 total economic impact to Queen Creek."},
+      {c:"RV",q:"Is RV camping available?",a:"Yes. 77 RV spaces (56 original + 21 added 2024) with 20/30/50 amp electric and water hookups. Two dump stations. Available year-round."},
+      {c:"Events",q:"What events are held regularly?",a:"Approximately 90 events per year. AzCHA monthly cutting, Roots N' Boots Rodeo, Art of the Cowgirl, barrel racing, team roping, mounted shooting, gymkhana, PBR, concerts, and more. Over 11,000 horses annually."},
+      {c:"Events",q:"Who is the anchor tenant?",a:"Arizona Cutting Horse Association (AzCHA) rents the main covered arena monthly for a full week of NCHA-sanctioned cutting competition."},
+      {c:"Events",q:"What is the economic impact?",a:"$42 million in economic impact for Queen Creek (2022–2023 analysis). 150,000+ annual attendees. 800 people per day on average. Return ratio of roughly 42:1 on the Town's investment."},
+      {c:"Contact",q:"How do I contact Horseshoe Park?",a:"General: 480-358-3710. Rentals/tours: 480-358-3793. Email: hpec@queencreekaz.gov."},
+      {c:"Community",q:"What is Friends of Horseshoe Park?",a:"A 501(c)(3) nonprofit incorporated in 2010 supporting HPEC. Has donated $132,785+ in 2023 alone for fencing, asphalt, horse panels, and 30 temporary stalls ($75,000). Hosts Roots N' Boots."},
+      {c:"Youth",q:"Are there youth programs?",a:"Yes. QC 4H Horse Project meets monthly. Chandler Vaqueros Saddle Club runs Saturday rodeos Sept–May for ages 3–40+."},
+    ],
+    policies: [
+      {t:"Coggins Required",p:"All horses must have valid Coggins report. Out-of-state horses need current Health Certificate."},
+      {t:"Stall Rules",p:"One animal per stall. No sleeping in stalls. Clean stalls before departure."},
+      {t:"Fire Safety",p:"No open flames, cooking, or heaters in or near barns."},
+      {t:"Parking",p:"Free spectator parking. Trailer parking near barns."},
+      {t:"Pets",p:"Pets must be leashed at all times. Clean up after your animals."},
+      {t:"Speed Limit",p:"15 mph throughout the facility."},
+      {t:"Hours",p:"Office Mon–Fri 8am–5pm. Facility open weekends 7am–10pm during events."},
+    ],
+  },
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// SELECT VENUE — change this one line to switch the entire app
+// ══════════════════════════════════════════════════════════════════════
+const VENUE_KEY = new URLSearchParams(window.location.search).get('venue') || 'westworld';
+const V = VENUES[VENUE_KEY] || VENUES.westworld;
+
+// ── STATE ────────────────────────────────────────────────────────────
+let currentBarn = 0;
+let currentEvent = 0;
+let selectedStall = null;
+let bookings = [];
+let bookedSet = new Set(V.prebooked);
+
+// ── INIT ─────────────────────────────────────────────────────────────
+function init() {
+  // Apply venue colors
+  const r = document.documentElement.style;
+  r.setProperty('--primary', V.colors.primary);
+  r.setProperty('--primary-dark', V.colors.primaryDark);
+  r.setProperty('--accent', V.colors.accent);
+  r.setProperty('--accent-light', V.colors.accentLight);
+  if (V.colors.cityColor) r.setProperty('--city-color', V.colors.cityColor);
+  if (V.colors.cityBg) r.setProperty('--city-bg', V.colors.cityBg);
+
+  // Apply venue text
+  document.title = `Overnight Stabling — ${V.shortName}`;
+  document.getElementById('hdrBadge').textContent = V.badge;
+  document.getElementById('hdrTitle').textContent = 'Overnight Stabling';
+  document.getElementById('hdrSub').textContent = V.name;
+  document.getElementById('aCityLbl').textContent = V.owner;
+  document.getElementById('confCityLbl').textContent = `${V.owner} (85%)`;
+
+  // Populate events
+  const sel = document.getElementById('eventSelect');
+  sel.innerHTML = V.events.map((e, i) => `<option value="${i}">${e.name} — ${e.dates}</option>`).join('');
+
+  // Build barn tabs
+  renderBarnTabs();
+  switchEvent();
+}
+
+function renderBarnTabs() {
+  document.getElementById('barnTabs').innerHTML = V.barns.map((b, i) =>
+    `<button class="barn-tab${i === currentBarn ? ' active' : ''}" onclick="switchBarn(${i})">${b.name}</button>`
+  ).join('');
+}
+
+function switchBarn(idx) {
+  currentBarn = idx;
+  renderBarnTabs();
+  renderStalls();
+}
+
+function switchEvent() {
+  currentEvent = parseInt(document.getElementById('eventSelect').value);
+  const ev = V.events[currentEvent];
+  document.getElementById('metaDates').innerHTML = `<strong>${ev.dates}</strong>`;
+  document.getElementById('metaRate').textContent = `$${ev.rate}`;
+
+  // Reset bookings for new event
+  bookedSet = new Set(V.prebooked);
+  bookings = [];
+  selectedStall = null;
+  showEmpty();
+  renderStalls();
+  updateStats();
+}
+
+function renderStalls() {
+  const barn = V.barns[currentBarn];
+  const area = document.getElementById('stallArea');
+  let html = '';
+
+  barn.sections.forEach(sec => {
+    html += `<div class="barn-section-label">${sec.label}</div><div class="stall-grid">`;
+    for (let i = 0; i < sec.count; i++) {
+      const num = sec.start + i;
+      const isTack = sec.tack.includes(num);
+      const isBooked = bookedSet.has(num);
+      const cls = isBooked ? 'booked' : 'available';
+      const tackCls = isTack ? ' tack' : '';
+      html += `<div class="stall ${cls}${tackCls}" onclick="${isBooked ? '' : `selectStall(${num},${isTack})`}" title="${isBooked ? 'Booked' : 'Available'}${isTack ? ' — Tack Stall' : ''}">${num}</div>`;
+    }
+    html += '</div>';
+  });
+
+  area.innerHTML = html;
+}
+
+function showEmpty() {
+  document.getElementById('emptyState').style.display = '';
+  document.getElementById('bookingForm').style.display = 'none';
+  document.getElementById('panelHeader').textContent = 'Select a Stall';
+}
+
+function selectStall(num, isTack) {
+  selectedStall = { num, isTack };
+  const ev = V.events[currentEvent];
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('bookingForm').style.display = '';
+  document.getElementById('panelHeader').textContent = `Stall #${num}${isTack ? ' (Tack)' : ''}`;
+  document.getElementById('fStall').value = `#${num} — ${V.barns[currentBarn].name}${isTack ? ' — Tack Stall' : ''}`;
+  document.getElementById('fHorse').value = '';
+  document.getElementById('fOwner').value = '';
+  document.getElementById('fTrainer').value = '';
+
+  // Nights selector
+  const nSel = document.getElementById('fNights');
+  nSel.innerHTML = '';
+  for (let n = 1; n <= ev.nights; n++) {
+    nSel.innerHTML += `<option value="${n}"${n === ev.nights ? ' selected' : ''}>${n} night${n > 1 ? 's' : ''}</option>`;
+  }
+
+  updatePrice();
+  document.getElementById('fHorse').focus();
+}
+
+function updatePrice() {
+  if (!selectedStall) return;
+  const ev = V.events[currentEvent];
+  const nights = parseInt(document.getElementById('fNights').value);
+  const rate = selectedStall.isTack ? Math.round(ev.rate * 0.85) : ev.rate;
+  const bedding = V.beddingFee * nights;
+  const total = (rate * nights) + bedding;
+  const cityAmt = total * V.citySplit;
+  const operAmt = total * V.operSplit;
+
+  document.getElementById('pRate').textContent = `$${rate}/night${selectedStall.isTack ? ' (tack)' : ''}`;
+  document.getElementById('pNights').textContent = `× ${nights}`;
+  document.getElementById('pBedding').textContent = `$${bedding}`;
+  document.getElementById('pTotal').textContent = `$${total}`;
+  document.getElementById('pCity').textContent = `$${cityAmt.toFixed(0)} → ${V.owner}`;
+  document.getElementById('pOper').textContent = `$${operAmt.toFixed(0)} → Operator`;
+  document.getElementById('priceBreak').style.display = '';
+
+  // Enable/disable button
+  const h = document.getElementById('fHorse').value.trim();
+  const o = document.getElementById('fOwner').value.trim();
+  document.getElementById('bookBtn').disabled = !(h && o);
+}
+
+// Live validation
+document.addEventListener('input', (e) => {
+  if (['fHorse', 'fOwner'].includes(e.target.id)) updatePrice();
+});
+
+function processBooking() {
+  const ev = V.events[currentEvent];
+  const nights = parseInt(document.getElementById('fNights').value);
+  const rate = selectedStall.isTack ? Math.round(ev.rate * 0.85) : ev.rate;
+  const bedding = V.beddingFee * nights;
+  const total = (rate * nights) + bedding;
+  const cityAmt = total * V.citySplit;
+  const operAmt = total * V.operSplit;
+
+  const booking = {
+    id: `${V.prefix}-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+    stall: selectedStall.num,
+    isTack: selectedStall.isTack,
+    horse: document.getElementById('fHorse').value.trim(),
+    owner: document.getElementById('fOwner').value.trim(),
+    trainer: document.getElementById('fTrainer').value.trim() || '—',
+    nights,
+    rate,
+    total,
+    cityAmt,
+    operAmt,
+    event: ev.name,
+  };
+
+  // Simulate payment
+  const btn = document.getElementById('bookBtn');
+  btn.textContent = 'Processing via Stripe…';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    bookings.push(booking);
+    bookedSet.add(selectedStall.num);
+    renderStalls();
+    updateStats();
+    showConfirmation(booking);
+    showEmpty();
+    btn.textContent = 'Complete Reservation';
+    showToast(`Stall #${booking.stall} booked for ${booking.horse}`);
+  }, 1800);
+}
+
+function showConfirmation(b) {
+  document.getElementById('confId').textContent = b.id;
+  document.getElementById('confDetail').innerHTML =
+    `<strong>${b.horse}</strong> → Stall #${b.stall}${b.isTack ? ' (Tack)' : ''}<br>` +
+    `${b.owner}${b.trainer !== '—' ? ' / Trainer: ' + b.trainer : ''}<br>` +
+    `${b.nights} night${b.nights > 1 ? 's' : ''} × $${b.rate} + $${(V.beddingFee * b.nights)} bedding = <strong>$${b.total}</strong><br>` +
+    `<small>${V.gate} — ${V.address}</small>`;
+  document.getElementById('confCity').textContent = `$${b.cityAmt.toFixed(0)}`;
+  document.getElementById('confOper').textContent = `$${b.operAmt.toFixed(0)}`;
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+}
+
+function updateStats() {
+  let totalStalls = 0;
+  V.barns.forEach(b => b.sections.forEach(s => totalStalls += s.count));
+  const booked = bookedSet.size;
+  const avail = totalStalls - booked;
+  const occ = Math.round((booked / totalStalls) * 100);
+  const totalRev = bookings.reduce((s, b) => s + b.total, 0);
+  const totalCity = bookings.reduce((s, b) => s + b.cityAmt, 0);
+  const totalOper = bookings.reduce((s, b) => s + b.operAmt, 0);
+
+  document.getElementById('sBooked').textContent = booked;
+  document.getElementById('sAvail').textContent = avail;
+  document.getElementById('sOcc').textContent = occ + '%';
+  document.getElementById('occFill').style.width = occ + '%';
+  document.getElementById('sRev').textContent = '$' + totalRev.toLocaleString();
+
+  // Admin KPIs
+  document.getElementById('aOcc').textContent = occ + '%';
+  document.getElementById('aRev').textContent = '$' + totalRev.toLocaleString();
+  document.getElementById('aCity').textContent = '$' + totalCity.toFixed(0);
+  document.getElementById('aOper').textContent = '$' + totalOper.toFixed(0);
+
+  // Manifest
+  document.getElementById('manifestBody').innerHTML = bookings.map(b =>
+    `<tr>
+      <td><strong>#${b.stall}</strong>${b.isTack ? ' <span style="font-size:10px;color:var(--accent)">(Tack)</span>' : ''}</td>
+      <td>${b.horse}</td><td>${b.owner}</td><td>${b.trainer}</td>
+      <td>${b.nights}</td><td><strong>$${b.total}</strong></td>
+      <td><span class="status-badge sb-confirmed">Confirmed</span></td>
+    </tr>`).join('');
+}
+
+function setView(v) {
+  document.getElementById('visitorView').classList.toggle('hide', v !== 'visitor');
+  document.getElementById('adminView').classList.toggle('show', v === 'admin');
+  document.getElementById('faqView').classList.toggle('show', v === 'faq');
+  document.getElementById('btn-visitor').classList.toggle('active', v === 'visitor');
+  document.getElementById('btn-admin').classList.toggle('active', v === 'admin');
+  document.getElementById('btn-faq').classList.toggle('active', v === 'faq');
+  if (v === 'admin') updateStats();
+  if (v === 'faq') renderFaq();
+}
+
+// ── FAQ SYSTEM ───────────────────────────────────────────────────────
+let faqCat = 'All';
+function renderFaq() {
+  if (!V.qa) return;
+  // Build category buttons
+  const cats = ['All', ...new Set(V.qa.map(q => q.c))];
+  document.getElementById('faqCats').innerHTML = cats.map(c =>
+    `<button class="faq-cat-btn${c === faqCat ? ' active' : ''}" onclick="setFaqCat('${c}')">${c}</button>`
+  ).join('');
+  filterFaq();
+  renderPolicies();
+}
+
+function setFaqCat(c) { faqCat = c; renderFaq(); }
+
+function filterFaq() {
+  if (!V.qa) return;
+  const search = (document.getElementById('faqSearch').value || '').toLowerCase();
+  const filtered = V.qa.filter(q => {
+    const matchCat = faqCat === 'All' || q.c === faqCat;
+    const matchSearch = !search || q.q.toLowerCase().includes(search) || q.a.toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
+  document.getElementById('faqCount').textContent = `Showing ${filtered.length} of ${V.qa.length} questions`;
+  document.getElementById('faqGrid').innerHTML = filtered.map((q, i) =>
+    `<div class="faq-card" onclick="this.classList.toggle('open')">
+      <div class="faq-q">${q.q}<span class="arrow">▼</span></div>
+      <div class="faq-a">${q.a}<div class="faq-tag">${q.c}</div></div>
+    </div>`
+  ).join('');
+}
+
+function renderPolicies() {
+  if (!V.policies) return;
+  document.getElementById('policyGrid').innerHTML = V.policies.map(p =>
+    `<div class="policy-card"><div class="policy-title">${p.t}</div><div class="policy-text">${p.p}</div></div>`
+  ).join('');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+init();
+</script>
+</body>
+</html>
