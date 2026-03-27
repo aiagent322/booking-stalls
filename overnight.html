@@ -37,27 +37,29 @@ a{color:inherit;text-decoration:none}
 .hsv{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:#fff}
 .hsl{font-size:10px;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-top:2px;font-weight:700}
 
-.filter-bar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:65px;z-index:90}
-.fi{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.si{flex:1;min-width:200px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13.5px;background:#fff}
+.filter-bar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 12px;position:sticky;top:65px;z-index:90}
+.fi{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.fi-row1{display:flex;gap:8px;align-items:center;width:100%}
+.nearme-btn{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:#C62828;color:#fff;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;letter-spacing:.02em}
+.nearme-btn.active{background:#8E0000;color:#fff}
+.nearme-btn:hover{background:#A02020}
+.si{flex:1;min-width:0;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;background:#fff}
 .si:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,168,75,.15)}
+.fi-row2{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
 .cbs{display:flex;gap:4px;flex-wrap:wrap}
-.cb{padding:5px 12px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--tan);transition:all .15s;font-family:'DM Sans',sans-serif}
+.cb{padding:5px 10px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--tan);transition:all .15s;font-family:'DM Sans',sans-serif}
 .cb.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
 .cb:hover:not(.active){border-color:var(--gold);color:var(--gold-dark)}
-.rc{font-size:12px;color:var(--tan);margin-left:auto;white-space:nowrap}
-.nearme-btn{padding:5px 12px;border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--gold);background:#fff;color:var(--gold-dark);transition:all .15s;font-family:'DM Sans',sans-serif}
-.nearme-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
-.nearme-btn:hover:not(.active){background:var(--gold);color:var(--dark)}
+.rc{font-size:11px;color:var(--tan);margin-left:auto;white-space:nowrap}
 .nearme-status{font-size:11px;color:var(--tan);font-weight:600}
-.radius-bar{display:none;align-items:center;gap:6px;flex-wrap:wrap;width:100%;margin-top:6px}
+.radius-bar{display:none;align-items:center;gap:5px;flex-wrap:wrap;width:100%}
 .radius-bar .rlbl{font-size:11px;color:var(--tan);font-weight:600}
-.radius-btn{padding:4px 10px;border-radius:12px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--tan);font-family:'DM Sans',sans-serif;transition:all .12s}
+.radius-btn{padding:5px 10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--tan);font-family:'DM Sans',sans-serif;transition:all .12s}
 .radius-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
 .dist-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#FFF3E0;color:#E65100;margin-left:4px}
 
-.gw{max-width:1100px;margin:0 auto;padding:20px}
-.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.gw{max-width:1100px;margin:0 auto;padding:12px}
+.fg{display:grid;grid-template-columns:1fr;gap:12px}
 .fc{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:18px 20px;transition:all .2s}
 .fc:hover{border-color:var(--gold);box-shadow:0 4px 20px rgba(26,16,8,.08);transform:translateY(-2px)}
 .fc-city{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rust);margin-bottom:4px}
@@ -86,7 +88,8 @@ footer{max-width:1100px;margin:32px auto 0;padding:20px 20px 28px;border-top:1px
 .fl a:hover{color:var(--gold-dark)}
 .fcopy{width:100%;font-size:10px;color:var(--tan);opacity:.6;margin-top:6px}
 
-@media(max-width:640px){.fg{grid-template-columns:1fr}.fi{flex-direction:column;align-items:stretch}.rc{margin-left:0}.hero-stats{gap:20px}}
+@media(min-width:640px){.fg{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}.gw{padding:20px}.fi-row1{}.fi{flex-direction:column}}
+@media(min-width:900px){.fi{flex-direction:row;flex-wrap:wrap;align-items:center}.fi-row1{flex:1}.fi-row2{}.radius-bar{width:auto}}
 </style>
 </head>
 <body>
@@ -113,21 +116,24 @@ footer{max-width:1100px;margin:32px auto 0;padding:20px 20px 28px;border-top:1px
 </div></div>
 
 <div class="filter-bar"><div class="fi">
-  <input class="si" id="search" placeholder="Search by city, name, or amenity…" oninput="render()">
-  <button class="nearme-btn" id="nearmeBtn" onclick="toggleNearMe()">📍 Near Me</button>
-  <span class="nearme-status" id="nearmeStatus"></span>
-  <div class="cbs" id="corridorBtns"></div>
-  <span class="rc" id="count"></span>
-</div>
-<div class="radius-bar" id="radiusBar">
-  <span class="rlbl">Radius:</span>
-  <button class="radius-btn" onclick="setRadius(25,this)">25 mi</button>
-  <button class="radius-btn" onclick="setRadius(50,this)">50 mi</button>
-  <button class="radius-btn active" onclick="setRadius(100,this)">100 mi</button>
-  <button class="radius-btn" onclick="setRadius(250,this)">250 mi</button>
-  <button class="radius-btn" onclick="setRadius(500,this)">500 mi</button>
-</div>
-</div>
+  <div class="fi-row1">
+    <button class="nearme-btn" id="nearmeBtn" onclick="toggleNearMe()">📍 NEAR ME</button>
+    <input class="si" id="search" placeholder="Search city, name, amenity…" oninput="render()">
+    <span class="nearme-status" id="nearmeStatus"></span>
+  </div>
+  <div class="fi-row2">
+    <div class="cbs" id="corridorBtns"></div>
+    <span class="rc" id="count"></span>
+  </div>
+  <div class="radius-bar" id="radiusBar">
+    <span class="rlbl">Radius:</span>
+    <button class="radius-btn" onclick="setRadius(25,this)">25 mi</button>
+    <button class="radius-btn" onclick="setRadius(50,this)">50 mi</button>
+    <button class="radius-btn active" onclick="setRadius(100,this)">100 mi</button>
+    <button class="radius-btn" onclick="setRadius(250,this)">250 mi</button>
+    <button class="radius-btn" onclick="setRadius(500,this)">500 mi</button>
+  </div>
+</div></div>
 
 <div class="gw"><div class="fg" id="grid"></div></div>
 
