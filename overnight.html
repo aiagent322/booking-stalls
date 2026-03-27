@@ -46,6 +46,15 @@ a{color:inherit;text-decoration:none}
 .cb.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
 .cb:hover:not(.active){border-color:var(--gold);color:var(--gold-dark)}
 .rc{font-size:12px;color:var(--tan);margin-left:auto;white-space:nowrap}
+.nearme-btn{padding:5px 12px;border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--gold);background:#fff;color:var(--gold-dark);transition:all .15s;font-family:'DM Sans',sans-serif}
+.nearme-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.nearme-btn:hover:not(.active){background:var(--gold);color:var(--dark)}
+.nearme-status{font-size:11px;color:var(--tan);font-weight:600}
+.radius-bar{display:none;align-items:center;gap:6px;flex-wrap:wrap;width:100%;margin-top:6px}
+.radius-bar .rlbl{font-size:11px;color:var(--tan);font-weight:600}
+.radius-btn{padding:4px 10px;border-radius:12px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--tan);font-family:'DM Sans',sans-serif;transition:all .12s}
+.radius-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold)}
+.dist-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#FFF3E0;color:#E65100;margin-left:4px}
 
 .gw{max-width:1100px;margin:0 auto;padding:20px}
 .fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
@@ -105,9 +114,20 @@ footer{max-width:1100px;margin:32px auto 0;padding:20px 20px 28px;border-top:1px
 
 <div class="filter-bar"><div class="fi">
   <input class="si" id="search" placeholder="Search by city, name, or amenity…" oninput="render()">
+  <button class="nearme-btn" id="nearmeBtn" onclick="toggleNearMe()">📍 Near Me</button>
+  <span class="nearme-status" id="nearmeStatus"></span>
   <div class="cbs" id="corridorBtns"></div>
   <span class="rc" id="count"></span>
-</div></div>
+</div>
+<div class="radius-bar" id="radiusBar">
+  <span class="rlbl">Radius:</span>
+  <button class="radius-btn" onclick="setRadius(25,this)">25 mi</button>
+  <button class="radius-btn" onclick="setRadius(50,this)">50 mi</button>
+  <button class="radius-btn active" onclick="setRadius(100,this)">100 mi</button>
+  <button class="radius-btn" onclick="setRadius(250,this)">250 mi</button>
+  <button class="radius-btn" onclick="setRadius(500,this)">500 mi</button>
+</div>
+</div>
 
 <div class="gw"><div class="fg" id="grid"></div></div>
 
@@ -119,44 +139,78 @@ footer{max-width:1100px;margin:32px auto 0;padding:20px 20px 28px;border-top:1px
 
 <script>
 const F=[
-{n:"The Aspen Lodge",c:"Alpine",a:"1 Co Rd 2325",p:"866-322-7736",e:"theaspenlodge@yahoo.com",w:"https://theaspenlodge.com/",s:"8 stall mare motel",rv:"5 full RV hookups",r:"",am:"Cabins, Apache NF trails, 8000ft, pet-friendly",cor:"",no:"White Mountains, stay a night or a week"},
-{n:"Christina Dora Equestrian",c:"Apache Junction",a:"1360 N Vista Road",p:"602-550-0823",e:"jlsbrg@hotmail.com",w:"",s:"8 box stalls + 4 partially covered",rv:"Limited parking, no hookups",r:"$25/horse/night",am:"Wash rack, round pen, dressage arena, Superstition Mtn trails",cor:"I-10",no:"Open May 1 - Oct 1"},
-{n:"Lazee Day Dairy",c:"Apache Junction",a:"2040 S Goldfield Road",p:"780-991-6995",e:"lazeedaydairy@hotmail.com",w:"",s:"Covered sheltered pens",rv:"No",r:"$30/horse/night",am:"Exercise turn-out, wash station",cor:"I-10",no:"Open Nov 1 - Mar 15. Cash only."},
-{n:"Bobbie McGhee Stables",c:"Apache Junction",a:"1715 N Vista Road",p:"402-276-1014",e:"tronkar@gmail.com",w:"",s:"Stalls near arena/round pen",rv:"Dry camping, big rigs OK",r:"",am:"Arena, 50' round pen, trail access, hay available",cor:"I-10",no:"Coggins & health cert required"},
-{n:"Nicolls Country Ranch",c:"Ash Fork",a:"1158 W Valley Circle",p:"928-606-1058",e:"nicollscountry@gmail.com",w:"http://www.theshiftyjackranch.com",s:"Pasture",rv:"RV electrical",r:"",am:"Arenas, round pen, hay",cor:"I-40",no:"45mi N Prescott, 50mi W Flagstaff, 73mi Grand Canyon"},
-{n:"Spears Ranch",c:"Benson",a:"1538 S Tyler Road",p:"520-349-5940",e:"lareespears@yahoo.com",w:"",s:"Covered pens, fenced",rv:"50amp/sewer/water, Bunkhouse (6)",r:"",am:"4 pens, fire pit, BBQ, WiFi, San Pedro River trails",cor:"I-10",no:"45mi E Tucson. Near Kartchner Caverns, Tombstone."},
-{n:"Nashwa Farms",c:"Camp Verde",a:"3500 W Mahoney Road",p:"602-525-0630",e:"nashwafarms@gmail.com",w:"https://nashwafarms.com/",s:"Overnight stalls",rv:"RV hookups",r:"See website",am:"Horse camping, seasonal boarding, full/self care",cor:"I-17",no:"4mi from I-17. Near hotels, gas, grocery."},
-{n:"Cave Creek Ranch",c:"Cave Creek",a:"4834 E Creek Canyon Road",p:"623-329-5416",e:"shantel.glick@gmail.com",w:"",s:"4 covered stalls (16x16 & 16x32)",rv:"Dry camping $35/night",r:"$25/horse/night",am:"Round pen, paddocks, Cave Creek NF trailheads",cor:"",no:"15min Dynamite Arena, 35min WestWorld. Coggins req."},
-{n:"The Ranch at Trails End",c:"Cottonwood",a:"1001 S Trails End Drive",p:"928-301-8523",e:"maryboles333@yahoo.com",w:"https://theranchattrailsend.com/",s:"Two 24x12 stalls w/ shelters",rv:"Trailer parking",r:"$30/horse/night",am:"60' round pen, 20min from Sedona",cor:"I-17",no:"National Park trails off property. Dead Horse SP nearby."},
-{n:"Jon Ray Ranch",c:"Douglas",a:"5379 Rocky Road",p:"520-368-1502",e:"sdenhameyes@gmail.com",w:"https://jonrayranch.com/",s:"9 stall barn + outside pens",rv:"Limited hookups",r:"Barn $20/night, Outside $15/night (hay incl)",am:"Round pen, 40 acres, horse walker, wash rack, shoeing",cor:"",no:"75mi S of I-10. Se Habla Espanol."},
-{n:"Summer Sage Stables",c:"Flagstaff",a:"7700 E Old Walnut Canyon Rd",p:"928-853-9005",e:"Toadnjulie@gmail.com",w:"http://www.summersagestables.com",s:"17 indoor stalls (12x14) + 6 stud stalls",rv:"Electric & water hookups",r:"$30/night/head",am:"Round pen, arena, forest trails, rubber pad floors",cor:"I-40",no:"SE of Flagstaff, easy I-40 access"},
-{n:"Sycamore Ranch",c:"Flagstaff",a:"11705 N US Highway 89",p:"928-525-4756",e:"sycamoreranch89@gmail.com",w:"https://www.sycamoreranch89.com/",s:"18 enclosed Barn Master stalls",rv:"100x20 spots w/ power/water/sewer",r:"",am:"Wash rack, turn out/riding pen",cor:"",no:"North of Flagstaff, adjacent Rt 89"},
-{n:"Happy Horse & Dog Pet Resort",c:"Fredonia",a:"113 Hidden Creek Road",p:"435-899-9335",e:"pietowngirl@gmail.com",w:"https://www.happyhorseanddogpetresort.com/",s:"Large corrals",rv:"1 RV site, 1 tent site",r:"",am:"Casita w/ kitchenette, near Zion/Bryce/Grand Canyon N Rim",cor:"",no:"5min from Kanab UT. Text when 1hr away."},
-{n:"Tumbling T Ranch",c:"Goodyear",a:"642 N 159th Ave",p:"602-369-0945",e:"tumblingtranch@yahoo.com",w:"",s:"9 pastures, stalls",rv:"RV electric",r:"",am:"Lighted arenas, round pen, hot walker, wash rack",cor:"I-10",no:"Easy I-10 on/off. Call for directions (GPS wrong)."},
-{n:"Goodwater Ranch",c:"Holbrook",a:"9527 Cattleman Road",p:"602-300-8176",e:"hchuckjohnson@gmail.com",w:"",s:"Large covered paddocks",rv:"Trailer hookups $35/night",r:"$30/horse/night",am:"Arena $20/day, unlimited riding $50/day",cor:"I-40",no:"I-40 Exit 303. Check in before 8pm. Venmo accepted."},
-{n:"Blake Ranch RV Park & Horse Motel",c:"Kingman",a:"9315 E Blake Ranch Road",p:"928-757-3336",e:"blakeranchrvpark@gmail.com",w:"http://blakeranchrv.com/",s:"15 stalls (12x12 & 12x24)",rv:"Large pull-thru FHU, bunkhouse",r:"10% off w/ horsemotel.com mention",am:"Two 50' round pens, store, laundry, WiFi, dog runs",cor:"I-40",no:"0.2mi off I-40 exit 66. Good Sam 9/10/9.5."},
-{n:"Wild West Town & Ranch",c:"Mesa",a:"1601 W Williams Field Rd",p:"844-998-7262",e:"jimlovell13@gmail.com",w:"",s:"4-stall mare motel (12x24 runs)",rv:"Covered RV storage, dry camp $50/night",r:"$25/horse/night",am:"Turnout corral, tack room, Casita on Airbnb w/ pool",cor:"I-10",no:"7min AZ Athletic Grounds, 20min Horseshoe Park"},
-{n:"Wickenburg Horse Motel",c:"Morristown",a:"42702 N US Hwy 60",p:"928-671-1482",e:"Barterbob@gmail.com",w:"",s:"12x12 stalls w/ 12x24 runs",rv:"RV hookups",r:"",am:"Arena, tack room, unlimited riding, highway access",cor:"",no:"US60 & Hwy 74. 8mi S of Wickenburg."},
-{n:"Hale Family Ranch",c:"Payson",a:"396 E Hashknife Arena Rd",p:"480-229-8765",e:"tandthale@hotmail.com",w:"",s:"1 stall per campsite",rv:"Hookups $35/day (water+electric)",r:"$20/horse/day",am:"Arena, national forest trails, big rigs OK",cor:"I-17",no:"Gisela, just outside Payson"},
-{n:"Lazy Horse Ranch",c:"Pearce",a:"3651 E Doe Ranch Road",p:"602-620-0247",e:"becky@lazyhorseranch.com",w:"https://lazyhorseranch.com/",s:"16 corrals (20x20)",rv:"6 FHU sites, big rig friendly",r:"",am:"Arena, round pen, stock trailers for trailheads, WiFi, DISH TV, laundry, fire pit",cor:"I-10",no:"SE Arizona, 20mi S of I-10 from Willcox"},
-{n:"Clover Equine",c:"Phoenix",a:"38639 N 33rd Ave",p:"",e:"cloverboardandtrain@gmail.com",w:"https://www.cloverequine.com",s:"Top stalls, large runs",rv:"Water & electric, RV $30/night",r:"Overnight $25, Weekly $120",am:"Round pen, turnout, wash station, Sonoran Desert Preserve access",cor:"I-17",no:"Desert Hills, 10min I-17 & Carefree Hwy"},
-{n:"Windrush Ranch",c:"Phoenix",a:"34820 N 14th Street",p:"602-390-1460",e:"windrushranch@yahoo.com",w:"https://windrushranch.com/",s:"Bedded 16x18 half-covered pens",rv:"Full RV hookups, easy pull-throughs",r:"",am:"60' round pen, 2 arenas, gated, WiFi, trail riding from gate",cor:"I-17",no:"N Phoenix, 4.5mi E of I-17 off Carefree Hwy"},
-{n:"Lost Cowboy Ranch",c:"Scottsdale",a:"29917 N 160th Street",p:"602-697-3260",e:"casinorides@aol.com",w:"",s:"Up to 4 stalls (12x16) per site",rv:"30amp, septic, water",r:"Credit cards (3% surcharge)",am:"Lighted roping arena, sorting pen w/ cattle, round pen, WiFi, mountain views",cor:"",no:"Rio Verde/N Scottsdale. 1mi Tonto NF, 3mi Verde River."},
-{n:"Rio Rancho Verde",c:"Scottsdale",a:"14307 E Hawknest Road",p:"480-227-0568",e:"Carmela@rioranchoverde.com",w:"http://www.rioranchoverde.com/",s:"3 barns, 21 covered stalls w/ auto waterers",rv:"Full hookups with decks",r:"",am:"2 arenas, 2 round pens, wash rack, Bunkhouse/Casita/suite w/ pool, organic garden",cor:"",no:"62 acres. 30min from WestWorld. Ride into Tonto NF. LUX Magazine 2020 award."},
-{n:"Red Rock (Thackaberry)",c:"Sedona",a:"130 Country Lane",p:"",e:"thackm@aol.com",w:"",s:"Large corral",rv:"Room for 3 trailers",r:"",am:"Miles of trails, 3BR home for rent occasionally",cor:"",no:"3 horse minimum. SW of Sedona off Rt 89A."},
-{n:"Irbinskas Stables",c:"Sonoita",a:"16685 Yucca Ash Farm Rd",p:"520-444-2460",e:"snpbak@aol.com",w:"",s:"Large covered pens",rv:"5 RV hookups, dump station",r:"RV $35/night (incl 1 pen), pens $15/night",am:"Turnout arena, dressage arena w/ mirror, round pens, wash rack, BLM trails",cor:"I-10",no:"Credit cards OK. Dogs welcome. Coggins req."},
-{n:"Tombstone Livery Stable",c:"Tombstone",a:"919 W Highway 82",p:"520-226-5915",e:"tombstonelivery@msn.com",w:"http://www.Tombstonelivery.com",s:"40 stalls (12x12, 16x16, 16x32)",rv:"Full hookups, pull-through, big rigs",r:"Daily/weekend/monthly",am:"Arena, round pens, wash racks, bunkhouse, apartments, showers",cor:"I-10",no:"3mi N of Tombstone. Ride historic trails."},
-{n:"Stewart Runner's Horse Motel",c:"Tonopah",a:"35704 W Indian School Rd",p:"623-386-5124",e:"sbhorsemotelrv@aol.com",w:"",s:"Individual 20x20 stalls",rv:"Full service (50/30/110 amp)",r:"Daily/weekly/monthly",am:"Wash area, hay, arena, practice roping, desert trails",cor:"I-10",no:"40mi W of Phoenix, I-10 exit 103. Jackpot roping across the road."},
-{n:"China Cabinet Ranch",c:"Tucson",a:"7100 N Desert View Dr",p:"520-400-3877",e:"chinacabinetranch@gmail.com",w:"https://chinacabinetranch.com/",s:"Shared pen + single pen",rv:"Dry camping $20/night (3 rigs max)",r:"$15/horse/night",am:"Round pen, Saguaro NP West adjacent, wrangler host, gooseneck available",cor:"I-10",no:"Open Oct-Apr. 50% deposit. Cash/check/Zelle/Venmo."},
-{n:"Rocking M Ranch",c:"Tucson",a:"6265 N Happy Trail",p:"520-744-2457",e:"lou@mindes.com",w:"http://www.rockingmranch.net",s:"12x12 covered stalls w/ auto waterers",rv:"RV pad",r:"",am:"Lighted 125x200 arena, round pen, Saguaro NP trails, vet/farrier on call, 4BR guest house",cor:"I-10",no:"4mi from I-10 & Ina Rd. Coggins required."},
-{n:"Lazy H Bar Desert Outpost",c:"Tucson",a:"14550 S Stagecoach Rd",p:"707-939-5616",e:"lauren.benward@gmail.com",w:"",s:"2 covered paddocks, 1 pen, turnout",rv:"No hookups, trailer-friendly",r:"2 night minimum",am:"3BR/2BA vacation rental w/ pool, hot tub, round pen, wash rack",cor:"I-19",no:"SW of Tucson. Ride out or trailer to Saguaro NP."},
-{n:"Moody Ranch",c:"Tucson",a:"5348 W Calle Maverick",p:"520-405-6041",e:"jeannieoftucson@aol.com",w:"",s:"3 stall barn, 2 turn outs",rv:"30 & 50amp FHU",r:"",am:"Private acre, fully fenced, 30ft gate, house for rent",cor:"I-10",no:"NW Tucson right off I-10. Big rigs OK."},
-{n:"Wandering Rose Farm",c:"Tucson",a:"9500 W Sky Blue Dr",p:"208-880-1294",e:"katierose78@icloud.com",w:"",s:"20x20 stall",rv:"RV 30amp+water $30/night",r:"$20/horse/night",am:"Arena, round pen, Tucson Mtn Park & Saguaro NP trails, Airbnb studio",cor:"I-19",no:"W side Tucson Mountains. Seasonal discounts."},
-{n:"Desert Akers",c:"Wickenburg",a:"",p:"970-215-2659",e:"traceyridesaz@aol.com",w:"",s:"Covered panel pens w/ auto waterers",rv:"Full RV, 50amp",r:"Daily/weekly/extended",am:"Turn out, round pen, near BLM & roping arenas",cor:"",no:"Hwy 60, 20mi W Surprise. Closed Jun-Sep. Non-smoking."},
-{n:"Two Bit Ranch",c:"Wickenburg",a:"3950 Black Mountain Rd",p:"602-509-0297",e:"cathyhulme@gmail.com",w:"",s:"4 covered walk-out stalls",rv:"Full hookups LQ $50/day",r:"Stalls $25/day, paddocks $15/horse",am:"Round pen, 2 turnouts, state land riding",cor:"",no:"W of Wickenburg airport. No arena."},
-{n:"Lainee Shearer QH",c:"Wittmann",a:"21223 W Restin Rd",p:"605-200-1777",e:"laineeshearer@yahoo.com",w:"",s:"3 turnout pens, 5 covered runs",rv:"",r:"",am:"2.5 acres, outdoor kitchen, fire pit",cor:"",no:"NW of Phoenix, near Wickenburg arenas"},
-{n:"McClure Ranch",c:"Yuma",a:"13527 S Avenue 4 1/2E",p:"928-210-2128",e:"Howdy.mcclureranch@gmail.com",w:"",s:"14 covered stalls (20x40), hay included",rv:"No",r:"$20/night",am:"Round pen, arena, wash rack, pasture turnouts",cor:"I-8",no:"SW Arizona, few mi from I-8. Midway Phoenix-San Diego. Call ahead. Coggins req."},
+{n:"The Aspen Lodge",c:"Alpine",a:"1 Co Rd 2325",p:"866-322-7736",e:"theaspenlodge@yahoo.com",w:"https://theaspenlodge.com/",s:"8 stall mare motel",rv:"5 full RV hookups",r:"",am:"Cabins, Apache NF trails, 8000ft, pet-friendly",cor:"",no:"White Mountains, stay a night or a week",lat:33.844,lng:-109.160},
+{n:"Christina Dora Equestrian",c:"Apache Junction",a:"1360 N Vista Road",p:"602-550-0823",e:"jlsbrg@hotmail.com",w:"",s:"8 box stalls + 4 partially covered",rv:"Limited parking, no hookups",r:"$25/horse/night",am:"Wash rack, round pen, dressage arena, Superstition Mtn trails",cor:"I-10",no:"Open May 1 - Oct 1",lat:33.427,lng:-111.527},
+{n:"Lazee Day Dairy",c:"Apache Junction",a:"2040 S Goldfield Road",p:"780-991-6995",e:"lazeedaydairy@hotmail.com",w:"",s:"Covered sheltered pens",rv:"No",r:"$30/horse/night",am:"Exercise turn-out, wash station",cor:"I-10",no:"Open Nov 1 - Mar 15. Cash only.",lat:33.396,lng:-111.512},
+{n:"Bobbie McGhee Stables",c:"Apache Junction",a:"1715 N Vista Road",p:"402-276-1014",e:"tronkar@gmail.com",w:"",s:"Stalls near arena/round pen",rv:"Dry camping, big rigs OK",r:"",am:"Arena, 50' round pen, trail access, hay available",cor:"I-10",no:"Coggins & health cert required",lat:33.415,lng:-111.554},
+{n:"Nicolls Country Ranch",c:"Ash Fork",a:"1158 W Valley Circle",p:"928-606-1058",e:"nicollscountry@gmail.com",w:"http://www.theshiftyjackranch.com",s:"Pasture",rv:"RV electrical",r:"",am:"Arenas, round pen, hay",cor:"I-40",no:"45mi N Prescott, 50mi W Flagstaff, 73mi Grand Canyon",lat:35.256,lng:-112.481},
+{n:"Spears Ranch",c:"Benson",a:"1538 S Tyler Road",p:"520-349-5940",e:"lareespears@yahoo.com",w:"",s:"Covered pens, fenced",rv:"50amp/sewer/water, Bunkhouse (6)",r:"",am:"4 pens, fire pit, BBQ, WiFi, San Pedro River trails",cor:"I-10",no:"45mi E Tucson. Near Kartchner Caverns, Tombstone.",lat:31.932,lng:-110.259},
+{n:"Nashwa Farms",c:"Camp Verde",a:"3500 W Mahoney Road",p:"602-525-0630",e:"nashwafarms@gmail.com",w:"https://nashwafarms.com/",s:"Overnight stalls",rv:"RV hookups",r:"See website",am:"Horse camping, seasonal boarding, full/self care",cor:"I-17",no:"4mi from I-17. Near hotels, gas, grocery.",lat:34.641,lng:-111.914},
+{n:"Cave Creek Ranch",c:"Cave Creek",a:"4834 E Creek Canyon Road",p:"623-329-5416",e:"shantel.glick@gmail.com",w:"",s:"4 covered stalls (16x16 & 16x32)",rv:"Dry camping $35/night",r:"$25/horse/night",am:"Round pen, paddocks, Cave Creek NF trailheads",cor:"",no:"15min Dynamite Arena, 35min WestWorld. Coggins req.",lat:33.816,lng:-111.977},
+{n:"The Ranch at Trails End",c:"Cottonwood",a:"1001 S Trails End Drive",p:"928-301-8523",e:"maryboles333@yahoo.com",w:"https://theranchattrailsend.com/",s:"Two 24x12 stalls w/ shelters",rv:"Trailer parking",r:"$30/horse/night",am:"60' round pen, 20min from Sedona",cor:"I-17",no:"National Park trails off property. Dead Horse SP nearby.",lat:34.721,lng:-111.976},
+{n:"Jon Ray Ranch",c:"Douglas",a:"5379 Rocky Road",p:"520-368-1502",e:"sdenhameyes@gmail.com",w:"https://jonrayranch.com/",s:"9 stall barn + outside pens",rv:"Limited hookups",r:"Barn $20/night, Outside $15/night (hay incl)",am:"Round pen, 40 acres, horse walker, wash rack, shoeing",cor:"",no:"75mi S of I-10. Se Habla Espanol.",lat:31.404,lng:-109.558},
+{n:"Summer Sage Stables",c:"Flagstaff",a:"7700 E Old Walnut Canyon Rd",p:"928-853-9005",e:"Toadnjulie@gmail.com",w:"http://www.summersagestables.com",s:"17 indoor stalls (12x14) + 6 stud stalls",rv:"Electric & water hookups",r:"$30/night/head",am:"Round pen, arena, forest trails, rubber pad floors",cor:"I-40",no:"SE of Flagstaff, easy I-40 access",lat:35.215,lng:-111.557},
+{n:"Sycamore Ranch",c:"Flagstaff",a:"11705 N US Highway 89",p:"928-525-4756",e:"sycamoreranch89@gmail.com",w:"https://www.sycamoreranch89.com/",s:"18 enclosed Barn Master stalls",rv:"100x20 spots w/ power/water/sewer",r:"",am:"Wash rack, turn out/riding pen",cor:"",no:"North of Flagstaff, adjacent Rt 89",lat:35.308,lng:-111.542},
+{n:"Happy Horse & Dog Pet Resort",c:"Fredonia",a:"113 Hidden Creek Road",p:"435-899-9335",e:"pietowngirl@gmail.com",w:"https://www.happyhorseanddogpetresort.com/",s:"Large corrals",rv:"1 RV site, 1 tent site",r:"",am:"Casita w/ kitchenette, near Zion/Bryce/Grand Canyon N Rim",cor:"",no:"5min from Kanab UT. Text when 1hr away.",lat:36.965,lng:-112.529},
+{n:"Tumbling T Ranch",c:"Goodyear",a:"642 N 159th Ave",p:"602-369-0945",e:"tumblingtranch@yahoo.com",w:"",s:"9 pastures, stalls",rv:"RV electric",r:"",am:"Lighted arenas, round pen, hot walker, wash rack",cor:"I-10",no:"Easy I-10 on/off. Call for directions (GPS wrong).",lat:33.456,lng:-112.402},
+{n:"Goodwater Ranch",c:"Holbrook",a:"9527 Cattleman Road",p:"602-300-8176",e:"hchuckjohnson@gmail.com",w:"",s:"Large covered paddocks",rv:"Trailer hookups $35/night",r:"$30/horse/night",am:"Arena $20/day, unlimited riding $50/day",cor:"I-40",no:"I-40 Exit 303. Check in before 8pm. Venmo accepted.",lat:34.978,lng:-109.884},
+{n:"Blake Ranch RV Park & Horse Motel",c:"Kingman",a:"9315 E Blake Ranch Road",p:"928-757-3336",e:"blakeranchrvpark@gmail.com",w:"http://blakeranchrv.com/",s:"15 stalls (12x12 & 12x24)",rv:"Large pull-thru FHU, bunkhouse",r:"10% off w/ horsemotel.com mention",am:"Two 50' round pens, store, laundry, WiFi, dog runs",cor:"I-40",no:"0.2mi off I-40 exit 66. Good Sam 9/10/9.5.",lat:35.172,lng:-113.922},
+{n:"Wild West Town & Ranch",c:"Mesa",a:"1601 W Williams Field Rd",p:"844-998-7262",e:"jimlovell13@gmail.com",w:"",s:"4-stall mare motel (12x24 runs)",rv:"Covered RV storage, dry camp $50/night",r:"$25/horse/night",am:"Turnout corral, tack room, Casita on Airbnb w/ pool",cor:"I-10",no:"7min AZ Athletic Grounds, 20min Horseshoe Park",lat:33.307,lng:-111.583},
+{n:"Wickenburg Horse Motel",c:"Morristown",a:"42702 N US Hwy 60",p:"928-671-1482",e:"Barterbob@gmail.com",w:"",s:"12x12 stalls w/ 12x24 runs",rv:"RV hookups",r:"",am:"Arena, tack room, unlimited riding, highway access",cor:"",no:"US60 & Hwy 74. 8mi S of Wickenburg.",lat:33.871,lng:-112.640},
+{n:"Hale Family Ranch",c:"Payson",a:"396 E Hashknife Arena Rd",p:"480-229-8765",e:"tandthale@hotmail.com",w:"",s:"1 stall per campsite",rv:"Hookups $35/day (water+electric)",r:"$20/horse/day",am:"Arena, national forest trails, big rigs OK",cor:"I-17",no:"Gisela, just outside Payson",lat:34.106,lng:-111.275},
+{n:"Lazy Horse Ranch",c:"Pearce",a:"3651 E Doe Ranch Road",p:"602-620-0247",e:"becky@lazyhorseranch.com",w:"https://lazyhorseranch.com/",s:"16 corrals (20x20)",rv:"6 FHU sites, big rig friendly",r:"",am:"Arena, round pen, stock trailers for trailheads, WiFi, DISH TV, laundry, fire pit",cor:"I-10",no:"SE Arizona, 20mi S of I-10 from Willcox",lat:31.931,lng:-109.756},
+{n:"Clover Equine",c:"Phoenix",a:"38639 N 33rd Ave",p:"",e:"cloverboardandtrain@gmail.com",w:"https://www.cloverequine.com",s:"Top stalls, large runs",rv:"Water & electric, RV $30/night",r:"Overnight $25, Weekly $120",am:"Round pen, turnout, wash station, Sonoran Desert Preserve access",cor:"I-17",no:"Desert Hills, 10min I-17 & Carefree Hwy",lat:33.836,lng:-112.129},
+{n:"Windrush Ranch",c:"Phoenix",a:"34820 N 14th Street",p:"602-390-1460",e:"windrushranch@yahoo.com",w:"https://windrushranch.com/",s:"Bedded 16x18 half-covered pens",rv:"Full RV hookups, easy pull-throughs",r:"",am:"60' round pen, 2 arenas, gated, WiFi, trail riding from gate",cor:"I-17",no:"N Phoenix, 4.5mi E of I-17 off Carefree Hwy",lat:33.801,lng:-112.053},
+{n:"Lost Cowboy Ranch",c:"Scottsdale",a:"29917 N 160th Street",p:"602-697-3260",e:"casinorides@aol.com",w:"",s:"Up to 4 stalls (12x16) per site",rv:"30amp, septic, water",r:"Credit cards (3% surcharge)",am:"Lighted roping arena, sorting pen w/ cattle, round pen, WiFi, mountain views",cor:"",no:"Rio Verde/N Scottsdale. 1mi Tonto NF, 3mi Verde River.",lat:33.757,lng:-111.735},
+{n:"Rio Rancho Verde",c:"Scottsdale",a:"14307 E Hawknest Road",p:"480-227-0568",e:"Carmela@rioranchoverde.com",w:"http://www.rioranchoverde.com/",s:"3 barns, 21 covered stalls w/ auto waterers",rv:"Full hookups with decks",r:"",am:"2 arenas, 2 round pens, wash rack, Bunkhouse/Casita/suite w/ pool, organic garden",cor:"",no:"62 acres. 30min from WestWorld. Ride into Tonto NF. LUX Magazine 2020 award.",lat:33.807,lng:-111.773},
+{n:"Red Rock (Thackaberry)",c:"Sedona",a:"130 Country Lane",p:"",e:"thackm@aol.com",w:"",s:"Large corral",rv:"Room for 3 trailers",r:"",am:"Miles of trails, 3BR home for rent occasionally",cor:"",no:"3 horse minimum. SW of Sedona off Rt 89A.",lat:34.833,lng:-111.866},
+{n:"Irbinskas Stables",c:"Sonoita",a:"16685 Yucca Ash Farm Rd",p:"520-444-2460",e:"snpbak@aol.com",w:"",s:"Large covered pens",rv:"5 RV hookups, dump station",r:"RV $35/night (incl 1 pen), pens $15/night",am:"Turnout arena, dressage arena w/ mirror, round pens, wash rack, BLM trails",cor:"I-10",no:"Credit cards OK. Dogs welcome. Coggins req.",lat:31.745,lng:-110.641},
+{n:"Tombstone Livery Stable",c:"Tombstone",a:"919 W Highway 82",p:"520-226-5915",e:"tombstonelivery@msn.com",w:"http://www.Tombstonelivery.com",s:"40 stalls (12x12, 16x16, 16x32)",rv:"Full hookups, pull-through, big rigs",r:"Daily/weekend/monthly",am:"Arena, round pens, wash racks, bunkhouse, apartments, showers",cor:"I-10",no:"3mi N of Tombstone. Ride historic trails.",lat:31.748,lng:-110.104},
+{n:"Stewart Runner's Horse Motel",c:"Tonopah",a:"35704 W Indian School Rd",p:"623-386-5124",e:"sbhorsemotelrv@aol.com",w:"",s:"Individual 20x20 stalls",rv:"Full service (50/30/110 amp)",r:"Daily/weekly/monthly",am:"Wash area, hay, arena, practice roping, desert trails",cor:"I-10",no:"40mi W of Phoenix, I-10 exit 103. Jackpot roping across the road.",lat:33.494,lng:-112.819},
+{n:"China Cabinet Ranch",c:"Tucson",a:"7100 N Desert View Dr",p:"520-400-3877",e:"chinacabinetranch@gmail.com",w:"https://chinacabinetranch.com/",s:"Shared pen + single pen",rv:"Dry camping $20/night (3 rigs max)",r:"$15/horse/night",am:"Round pen, Saguaro NP West adjacent, wrangler host, gooseneck available",cor:"I-10",no:"Open Oct-Apr. 50% deposit. Cash/check/Zelle/Venmo.",lat:32.334,lng:-111.175},
+{n:"Rocking M Ranch",c:"Tucson",a:"6265 N Happy Trail",p:"520-744-2457",e:"lou@mindes.com",w:"http://www.rockingmranch.net",s:"12x12 covered stalls w/ auto waterers",rv:"RV pad",r:"",am:"Lighted 125x200 arena, round pen, Saguaro NP trails, vet/farrier on call, 4BR guest house",cor:"I-10",no:"4mi from I-10 & Ina Rd. Coggins required.",lat:32.320,lng:-111.079},
+{n:"Lazy H Bar Desert Outpost",c:"Tucson",a:"14550 S Stagecoach Rd",p:"707-939-5616",e:"lauren.benward@gmail.com",w:"",s:"2 covered paddocks, 1 pen, turnout",rv:"No hookups, trailer-friendly",r:"2 night minimum",am:"3BR/2BA vacation rental w/ pool, hot tub, round pen, wash rack",cor:"I-19",no:"SW of Tucson. Ride out or trailer to Saguaro NP.",lat:31.987,lng:-111.300},
+{n:"Moody Ranch",c:"Tucson",a:"5348 W Calle Maverick",p:"520-405-6041",e:"jeannieoftucson@aol.com",w:"",s:"3 stall barn, 2 turn outs",rv:"30 & 50amp FHU",r:"",am:"Private acre, fully fenced, 30ft gate, house for rent",cor:"I-10",no:"NW Tucson right off I-10. Big rigs OK.",lat:32.357,lng:-111.079},
+{n:"Wandering Rose Farm",c:"Tucson",a:"9500 W Sky Blue Dr",p:"208-880-1294",e:"katierose78@icloud.com",w:"",s:"20x20 stall",rv:"RV 30amp+water $30/night",r:"$20/horse/night",am:"Arena, round pen, Tucson Mtn Park & Saguaro NP trails, Airbnb studio",cor:"I-19",no:"W side Tucson Mountains. Seasonal discounts.",lat:32.202,lng:-111.169},
+{n:"Desert Akers",c:"Wickenburg",a:"",p:"970-215-2659",e:"traceyridesaz@aol.com",w:"",s:"Covered panel pens w/ auto waterers",rv:"Full RV, 50amp",r:"Daily/weekly/extended",am:"Turn out, round pen, near BLM & roping arenas",cor:"",no:"Hwy 60, 20mi W Surprise. Closed Jun-Sep. Non-smoking.",lat:33.965,lng:-112.730},
+{n:"Two Bit Ranch",c:"Wickenburg",a:"3950 Black Mountain Rd",p:"602-509-0297",e:"cathyhulme@gmail.com",w:"",s:"4 covered walk-out stalls",rv:"Full hookups LQ $50/day",r:"Stalls $25/day, paddocks $15/horse",am:"Round pen, 2 turnouts, state land riding",cor:"",no:"W of Wickenburg airport. No arena.",lat:33.970,lng:-112.810},
+{n:"Lainee Shearer QH",c:"Wittmann",a:"21223 W Restin Rd",p:"605-200-1777",e:"laineeshearer@yahoo.com",w:"",s:"3 turnout pens, 5 covered runs",rv:"",r:"",am:"2.5 acres, outdoor kitchen, fire pit",cor:"",no:"NW of Phoenix, near Wickenburg arenas",lat:33.808,lng:-112.519},
+{n:"McClure Ranch",c:"Yuma",a:"13527 S Avenue 4 1/2E",p:"928-210-2128",e:"Howdy.mcclureranch@gmail.com",w:"",s:"14 covered stalls (20x40), hay included",rv:"No",r:"$20/night",am:"Round pen, arena, wash rack, pasture turnouts",cor:"I-8",no:"SW Arizona, few mi from I-8. Midway Phoenix-San Diego. Call ahead. Coggins req.",lat:32.705,lng:-114.556},
 ];
+
+// ── NEAR ME ──────────────────────────────────────────────────────────
+let userLat=null,userLng=null,nearMeRadius=100,nearMeActive=false;
+
+function haversine(lat1,lon1,lat2,lon2){
+  const R=3958.8,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function toggleNearMe(){
+  const btn=document.getElementById('nearmeBtn');
+  const bar=document.getElementById('radiusBar');
+  const status=document.getElementById('nearmeStatus');
+  if(nearMeActive){
+    nearMeActive=false;userLat=null;userLng=null;
+    btn.classList.remove('active');bar.style.display='none';status.textContent='';
+    render();return;
+  }
+  status.textContent='Locating…';btn.classList.add('active');bar.style.display='flex';
+  if(!navigator.geolocation){status.textContent='Not supported';return;}
+  navigator.geolocation.getCurrentPosition(
+    pos=>{userLat=pos.coords.latitude;userLng=pos.coords.longitude;nearMeActive=true;status.textContent='';render();},
+    err=>{status.textContent='⚠️ Location denied';btn.classList.remove('active');bar.style.display='none';nearMeActive=false;},
+    {timeout:8000}
+  );
+}
+
+function setRadius(mi,btn){
+  nearMeRadius=mi;
+  document.querySelectorAll('.radius-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(nearMeActive&&userLat)render();
+}
 
 const CORRIDORS=[
   {id:'all',label:'All'},
@@ -180,11 +234,20 @@ function setCor(id){activeCor=id;init();}
 
 function render(){
   const q=(document.getElementById('search').value||'').toLowerCase();
-  const filtered=F.filter(f=>{
+  let filtered=F.map(f=>{
+    // Calculate distance if Near Me active
+    if(nearMeActive&&userLat&&f.lat){
+      f._dist=Math.round(haversine(userLat,userLng,f.lat,f.lng));
+    } else { f._dist=null; }
+    return f;
+  }).filter(f=>{
     const matchCor=activeCor==='all'||f.cor===activeCor;
     const matchQ=!q||[f.n,f.c,f.a,f.s,f.am,f.no].join(' ').toLowerCase().includes(q);
-    return matchCor&&matchQ;
+    const matchDist=!nearMeActive||!userLat||(f._dist!==null&&f._dist<=nearMeRadius);
+    return matchCor&&matchQ&&matchDist;
   });
+  // Sort by distance if Near Me active
+  if(nearMeActive&&userLat) filtered.sort((a,b)=>(a._dist||9999)-(b._dist||9999));
   document.getElementById('count').textContent=`${filtered.length} of ${F.length} facilities`;
   document.getElementById('grid').innerHTML=filtered.map(f=>{
     let pills='';
@@ -196,8 +259,9 @@ function render(){
     if(f.p)contact+=`<a class="fc-phone" href="tel:${f.p.replace(/[^0-9+]/g,'')}">📞 ${f.p}</a>`;
     if(f.e)contact+=`<a href="mailto:${f.e}">✉ Email</a>`;
     if(f.w)contact+=`<a href="${f.w}" target="_blank">🌐 Website</a>`;
+    const distBadge=f._dist!==null?`<span class="dist-badge">${f._dist} mi</span>`:'';
     return `<div class="fc" onclick="this.classList.toggle('open')">
-      <div class="fc-city">${f.c}, AZ${f.cor?' — '+f.cor:''}</div>
+      <div class="fc-city">${f.c}, AZ${f.cor?' — '+f.cor:''}${distBadge}</div>
       <div class="fc-name">${f.n}</div>
       ${f.a?`<div class="fc-addr">${f.a}</div>`:''}
       <div class="fc-pills">${pills}</div>
